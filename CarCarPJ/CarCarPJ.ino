@@ -13,6 +13,9 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 TinyGPSPlus gps;
 String send_to_esp;
 
+bool isHallAlertActive = false;
+bool isRed = false;
+
 void setup() {
   //預留Serial1給hall sensor
   Serial.begin(9600);   // 輸出到電腦（Serial Monitor）

@@ -1,8 +1,9 @@
 //Buzzer的東西
 #define HALL_PIN 7 
-bool isHallAlertActive = false;
-bool isRed = false;
-bool magnetNear   = false;
+
+extern bool isHallAlertActive;
+extern bool isRed;
+bool magnetNear = false;
 unsigned long awayStart = 0;
 const unsigned long HALL_THRESHOLD = 1000;
 
@@ -73,7 +74,7 @@ void initHallSensor() {
 }
 
 void updateHallSensor() {
-  if (!isRed) return;                // 解鎖時不偵測
+  if (!isRed) return;       // 解鎖時不偵測
 
   bool nowNear = (digitalRead(HALL_PIN) == LOW);
 
