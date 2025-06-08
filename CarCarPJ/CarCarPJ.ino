@@ -1,13 +1,15 @@
 #include <TinyGPSPlus.h>
 #include <SPI.h>
 #include <MFRC522.h>
-#include"RFID.h"
+#include "RFID.h"
 
 #define SS_PIN 53
-#define RST_PIN 49
+#define RST_PIN 49 //RFID
 #define buzzerPin 6
+#define noisyPin 5 //high dB
 #define RED_LED 3
 #define GREEN_LED 4
+#define hallPin 7
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 TinyGPSPlus gps;

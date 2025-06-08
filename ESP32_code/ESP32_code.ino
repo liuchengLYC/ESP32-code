@@ -27,18 +27,52 @@ void setup() {
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   delay(1000);  // 等待時間同步完成
+
+  WiFi.diconnect();
 }
 
 void loop() {
   if (Serial2.available()) {
-    String gpsData = Serial2.readStringUntil('\n');
-    gpsData.trim(); // 去除換行與空白
+    String command = Serial2.readStringUntil('\n');
+    command.trim();
 
-    double latitude, longitude;
-    if (parseGPS(gpsData, latitude, longitude)) {
-      sendToServer(latitude, longitude);
-    } else {
-      Serial.println("Invalid GPS data: " + gpsData);
+    if (command == "start") {
+      Serial.println("Start command received. Connecting WiFi...");
+      WiFi.begin(ssid, password);
+
+      // 等待連線
+      unsigned long startAttemptTime = millis();
+      while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) { // 最多等 10 秒
+        delay(500);
+        Serial.print(".");
+      }
+
+      if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("WiFi connected.");
+        Serial2.println("connected"); // 回報 Arduino
+
+        // 接收 GPS 座標
+        if (Serial2.available()) {
+          String gpsData = Serial2.readStringUntil('\n');
+          gpsData.trim();
+
+          double latitude, longitude;
+          if (parseGPS(gpsData, latitude, longitude)) {
+            sendToServer(latitude, longitude);
+            Serial2.println("done");  // 回報 Arduino 上傳完成
+          } else {
+            Serial.println("Invalid GPS data.");
+            Serial2.println("error");
+          }
+        }
+
+        // 傳完資料 → 斷 WiFi
+        WiFi.disconnect();
+        Serial.println("WiFi disconnected.");
+      } else {
+        Serial.println("WiFi connect failed.");
+        Serial2.println("error");
+      }
     }
   }
 }

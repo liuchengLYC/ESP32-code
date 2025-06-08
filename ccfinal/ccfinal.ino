@@ -1,0 +1,67 @@
+#include<SPI.h>
+#include<MFRC522.h>
+#include"gps.h"
+#include"rfid.h"
+#include"functions.h"
+
+#define RED_LED 3
+#define GREEN_LED 4
+#define noisyPin 5 //high dB
+#define buzzerPin 6
+#define hallPin 7
+#define RST_PIN 49
+#define SS_PIN 53
+
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+
+bool lock = true;
+bool stolen = false;
+unsigned long time = 0;
+unsigned long threshold = 800;
+int count = 0;
+
+void setup() {
+  Serial.begin(9600);   // 輸出到電腦（Serial Monitor）
+  Serial2.begin(9600);  // 與 ESP32 通訊
+  Serial3.begin(9600);  // 與 GPS 模組通訊（RX3）
+
+  SPI.begin();
+  mfrc522.PCD_Init();
+
+  pinMode(RED_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(noisyPin, OUTPUT);
+  pinMode(hallPin, INPUT);
+  digitalWrite(RED_LED, HIGH);
+  digitalWrite(GREEN_LED, HIGH);
+}
+
+void loop() {
+  if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()){
+    if(isAllowedUID(mfrc522.uid.uidByte)){
+      toggle(lock, stolen, count);
+    }
+  }
+  mfrc522.PICC_HaltA();
+  if(lock){
+    if(digitalRead(hallPin)){
+      while(digitalRead(hallPin)){}
+      unsigned long interval = millis() - time;
+      if(interval > threshold){
+        if(++count > 10)
+          stolen = true;
+      }else{
+        stolen = false;
+      }
+      time = millis();
+    }
+    if(stolen){
+      digitalWrite(noisyPin, HIGH);
+    }else{
+      digitalWrite(noisyPin, LOW);
+    }
+  }else{
+    //
+  }
+}
