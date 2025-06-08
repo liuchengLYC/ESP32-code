@@ -28,7 +28,7 @@ void setup() {
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   delay(1000);  // 等待時間同步完成
 
-  WiFi.diconnect();
+  WiFi.disconnect();
 }
 
 void loop() {
