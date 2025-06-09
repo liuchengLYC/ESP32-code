@@ -48,6 +48,7 @@ void loop() {
       }
 
       if (WiFi.status() == WL_CONNECTED) {
+        delay(5000);
         Serial.println("WiFi connected.");
         Serial2.println("connected"); // 回報 Arduino
 
