@@ -1,5 +1,5 @@
 #include<TinyGPSPlus.h>
-
+String send_to_esp;
 TinyGPSPlus gps;
 void setup() {
   Serial.begin(9600);   // 輸出到電腦（Serial Monitor）
@@ -8,20 +8,40 @@ void setup() {
 }
 
 void loop() {
-  // 讀取 GPS 模組資料
+  Serial.print("&");
   while (Serial3.available() > 0) {
     gps.encode(Serial3.read());
   }
-
-  // 當資料更新時，顯示經緯度
   if (gps.location.isUpdated()) {
-    Serial.print("Latitude: ");
-    Serial.print(gps.location.lat(), 6);
-    Serial.print(" | Longitude: ");
-    Serial.println(gps.location.lng(), 6);
     send_to_esp = String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6);
-    Serial.println(send_to_esp);
-    Serial2.println(send_to_esp);
-    delay(1000);
+    Serial2.println("start");
   }
+  Serial.print("$");
+  // 等 ESP32 回 "connected"
+  while (true) {
+    if (Serial2.available()) {
+      String reply = Serial2.readStringUntil('\n');
+      reply.trim();
+      if (reply == "connected") {
+        break; // 收到 connected，準備傳座標        
+      }
+    }
+  }
+  Serial.print("*");
+  Serial2.println(send_to_esp);
+  while (true) {
+    if (Serial2.available()) {
+      String reply = Serial2.readStringUntil('\n');
+      reply.trim();
+      if (reply == "done") {
+        Serial.println("ESP32 done, WiFi disconnected.");
+        break;
+      } else if (reply == "error") {
+        Serial.println("ESP32 reported error.");
+        break;
+      }
+    }
+  }
+  Serial.print("#");
+  delay(1000);
 }

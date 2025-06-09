@@ -1,6 +1,7 @@
 #include"gps.h"
 #define RED_LED 3
 #define GREEN_LED 4
+#define noisyPin 5
 #define buzzerPin 6
 
 int melody[] = {
@@ -22,6 +23,7 @@ void toggle(bool& lock, bool& stolen, int& count){
     count = 0;
     digitalWrite(RED_LED, HIGH);
     digitalWrite(GREEN_LED, LOW);
+    digitalWrite(noisyPin, LOW);
     sendlocation();
   }else{
     lock = true;

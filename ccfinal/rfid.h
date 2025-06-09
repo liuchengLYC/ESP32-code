@@ -18,3 +18,12 @@ bool isAllowedUID(byte *uid) {
   }
   return false;
 }
+void printUID(byte *uid) {
+  for (byte i = 0; i < 4; i++) {
+    Serial.print("0x");
+    if (uid[i] < 0x10) Serial.print("0");
+    Serial.print(uid[i], HEX);
+    if (i < 3) Serial.print(" ");
+  }
+  Serial.println();
+}

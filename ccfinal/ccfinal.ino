@@ -34,23 +34,28 @@ void setup() {
   pinMode(noisyPin, OUTPUT);
   pinMode(hallPin, INPUT);
   digitalWrite(RED_LED, HIGH);
-  digitalWrite(GREEN_LED, HIGH);
+  digitalWrite(GREEN_LED, LOW);
+  digitalWrite(noisyPin, LOW);
 }
 
 void loop() {
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()){
     if(isAllowedUID(mfrc522.uid.uidByte)){
       toggle(lock, stolen, count);
+      printUID(mfrc522.uid.uidByte);
     }
+    delay(1000);
+    mfrc522.PICC_HaltA();
+    mfrc522.PCD_StopCrypto1();
   }
-  mfrc522.PICC_HaltA();
   if(lock){
-    if(digitalRead(hallPin)){
-      while(digitalRead(hallPin)){}
+    if(!digitalRead(hallPin)){
+      while(!digitalRead(hallPin)){}
       unsigned long interval = millis() - time;
-      if(interval > threshold){
+      if(interval < threshold){
         if(++count > 10)
           stolen = true;
+        Serial.println(count);
       }else{
         stolen = false;
       }
