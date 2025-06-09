@@ -2,8 +2,8 @@
 #include <HTTPClient.h>
 #include "time.h"
 
-const char* ssid = "初華就只會騙人";
-const char* password = "00000000";
+const char* ssid = "柳橙";
+const char* password = "20051102";
 const char* serverURL = "https://gps-tracker-6ps0.onrender.com/api/gps";
 
 const char* ntpServer = "pool.ntp.org";
