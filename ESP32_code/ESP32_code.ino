@@ -2,8 +2,8 @@
 #include <HTTPClient.h>
 #include "time.h"
 
-const char* ssid = "liucheng";
-const char* password = "20051102";
+const char* ssid = "初華就只會騙人";
+const char* password = "00000000";
 const char* serverURL = "https://gps-tracker-6ps0.onrender.com/api/gps";
 
 const char* ntpServer = "pool.ntp.org";
@@ -48,15 +48,14 @@ void loop() {
       }
 
       if (WiFi.status() == WL_CONNECTED) {
-        delay(5000);
         Serial.println("WiFi connected.");
         Serial2.println("connected"); // 回報 Arduino
-
+        while(Serial2.available() == 0){}
         // 接收 GPS 座標
         if (Serial2.available()) {
           String gpsData = Serial2.readStringUntil('\n');
           gpsData.trim();
-
+          Serial.println(gpsData);
           double latitude, longitude;
           if (parseGPS(gpsData, latitude, longitude)) {
             sendToServer(latitude, longitude);
