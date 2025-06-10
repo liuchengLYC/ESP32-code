@@ -1,5 +1,6 @@
 #include<SPI.h>
 #include<MFRC522.h>
+#include<TinyGPSPlus.h>
 #include"gps.h"
 #include"rfid.h"
 #include"functions.h"
@@ -13,9 +14,11 @@
 #define SS_PIN 53
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
+TinyGPSPlus gps;
 
 bool lock = true;
 bool stolen = false;
+bool pending = false;
 unsigned long time = 0;
 unsigned long threshold = 1000;
 int count = 0;
@@ -39,9 +42,15 @@ void setup() {
 }
 
 void loop() {
+  while (Serial3.available() > 0) {
+    gps.encode(Serial3.read());
+  }
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()){
     if(isAllowedUID(mfrc522.uid.uidByte)){
       toggle(lock, stolen, count);
+      if(lock){
+        pending = true;
+      }
       printUID(mfrc522.uid.uidByte);
     }else{
       playAlert();
@@ -50,6 +59,10 @@ void loop() {
     delay(1000);
     mfrc522.PICC_HaltA();
     mfrc522.PCD_StopCrypto1();
+  }
+  if(pending && gps.location.isValid() && gps.location.age() < 2000){
+    sendlocation();
+    pending = false;
   }
   if(lock){
     if(!digitalRead(hallPin)){

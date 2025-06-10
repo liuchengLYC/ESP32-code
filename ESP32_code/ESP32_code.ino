@@ -29,6 +29,7 @@ void setup() {
   delay(1000);  // 等待時間同步完成
 
   WiFi.disconnect();
+  Serial.println("wifi disconnected");
 }
 
 void loop() {

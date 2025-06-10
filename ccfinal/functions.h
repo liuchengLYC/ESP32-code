@@ -1,4 +1,3 @@
-#include"gps.h"
 #define RED_LED 3
 #define GREEN_LED 4
 #define noisyPin 5
@@ -28,7 +27,6 @@ void toggle(bool& lock, bool& stolen, int& count){
     lock = true;
     digitalWrite(RED_LED, LOW);
     digitalWrite(GREEN_LED, HIGH);
-    sendlocation();
   }
   delay(1000); //necessary?
 }
