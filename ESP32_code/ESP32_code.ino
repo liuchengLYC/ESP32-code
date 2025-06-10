@@ -4,7 +4,7 @@
 
 const char* ssid = "柳橙";
 const char* password = "20051102";
-const char* serverURL = "https://gps-tracker-6ps0.onrender.com/api/gps";
+const char* serverURL = "https://purchasing-affair-modification-operations.trycloudflare.com/api/gps";
 
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 8 * 3600;
