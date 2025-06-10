@@ -24,11 +24,11 @@ void toggle(bool& lock, bool& stolen, int& count){
     digitalWrite(RED_LED, HIGH);
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(noisyPin, LOW);
-    sendlocation();
   }else{
     lock = true;
     digitalWrite(RED_LED, LOW);
     digitalWrite(GREEN_LED, HIGH);
+    sendlocation();
   }
   delay(1000); //necessary?
 }

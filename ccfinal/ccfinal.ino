@@ -17,7 +17,7 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 bool lock = true;
 bool stolen = false;
 unsigned long time = 0;
-unsigned long threshold = 800;
+unsigned long threshold = 1000;
 int count = 0;
 
 void setup() {
@@ -43,6 +43,9 @@ void loop() {
     if(isAllowedUID(mfrc522.uid.uidByte)){
       toggle(lock, stolen, count);
       printUID(mfrc522.uid.uidByte);
+    }else{
+      playAlert();
+      printUID(mfrc522.uid.uidByte);
     }
     delay(1000);
     mfrc522.PICC_HaltA();
@@ -63,6 +66,7 @@ void loop() {
     }
     if(stolen){
       digitalWrite(noisyPin, HIGH);
+      //tone(buzzerPin, 300);
     }else{
       digitalWrite(noisyPin, LOW);
     }
